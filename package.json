@@ -1,0 +1,29 @@
+{
+  "name": "casino-platform",
+  "version": "1.0.0",
+  "description": "Full-featured online casino platform with Angular and NestJS",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "backend:dev": "cd backend && npm run start:dev",
+    "frontend:dev": "cd frontend && npm start",
+    "backend:build": "cd backend && npm run build",
+    "frontend:build": "cd frontend && npm run build",
+    "backend:test": "cd backend && npm run test",
+    "frontend:test": "cd frontend && npm run test",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": [
+    "casino",
+    "gaming",
+    "nestjs",
+    "angular",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT"
+}

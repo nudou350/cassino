@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: casino-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: casino_user
+      POSTGRES_PASSWORD: casino_pass
+      POSTGRES_DB: casino_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - casino-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: casino-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - casino-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  casino-network:
+    driver: bridge
