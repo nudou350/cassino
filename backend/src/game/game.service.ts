@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Game, GameType } from './entities/game.entity';
+import { Game, GameType, Volatility } from './entities/game.entity';
 import { GameSession } from './entities/game-session.entity';
 import { UserService } from '../user/user.service';
 import { WalletService } from '../wallet/wallet.service';
@@ -214,7 +214,7 @@ export class GameService {
         type: GameType.SLOT,
         provider: 'House',
         rtpPercentage: 96.5,
-        volatility: 'medium',
+        volatility: Volatility.MEDIUM,
         minBet: 0.1,
         maxBet: 100,
         demoAvailable: true,
@@ -225,7 +225,7 @@ export class GameService {
         type: GameType.BLACKJACK,
         provider: 'House',
         rtpPercentage: 99.5,
-        volatility: 'low',
+        volatility: Volatility.LOW,
         minBet: 1,
         maxBet: 500,
         demoAvailable: true,
@@ -236,7 +236,7 @@ export class GameService {
         type: GameType.ROULETTE,
         provider: 'House',
         rtpPercentage: 97.3,
-        volatility: 'medium',
+        volatility: Volatility.MEDIUM,
         minBet: 0.5,
         maxBet: 1000,
         demoAvailable: true,

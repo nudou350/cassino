@@ -12,6 +12,8 @@ dist/
 build/
 */dist/
 */build/
+.angular/
+*/.angular/
 
 # Logs
 logs/
