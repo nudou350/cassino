@@ -63,4 +63,19 @@ export class GameController {
     const isValid = await this.gameService.verifySession(sessionId);
     return { sessionId, isValid };
   }
+
+  @Post(':id/launch')
+  @UseGuards(JwtAuthGuard)
+  async launchGame(
+    @Request() req,
+    @Param('id') gameId: string,
+    @Body() body: { demo?: boolean; returnUrl?: string },
+  ) {
+    return await this.gameService.launchGame(
+      req.user.id,
+      gameId,
+      body.demo || false,
+      body.returnUrl,
+    );
+  }
 }
