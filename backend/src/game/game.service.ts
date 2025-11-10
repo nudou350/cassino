@@ -15,6 +15,7 @@ import { BlackjackService } from './services/blackjack.service';
 import { RouletteService } from './services/roulette.service';
 import { ScratchCardService } from './services/scratch-card.service';
 import { KenoService } from './services/keno.service';
+import { ProviderFactoryService } from './services/provider-factory.service';
 
 @Injectable()
 export class GameService {
@@ -31,6 +32,7 @@ export class GameService {
     private rouletteService: RouletteService,
     private scratchCardService: ScratchCardService,
     private kenoService: KenoService,
+    private providerFactory: ProviderFactoryService,
   ) {}
 
   async getAllGames(): Promise<Game[]> {
@@ -235,6 +237,44 @@ export class GameService {
       session.nonce,
       session.provablyFairSeed,
     );
+  }
+
+  async launchGame(
+    userId: string,
+    gameId: string,
+    demo: boolean = false,
+    returnUrl?: string,
+  ): Promise<any> {
+    // Get the game
+    const game = await this.gameRepository.findOne({
+      where: { id: gameId, isActive: true },
+      relations: ['providerEntity'],
+    });
+
+    if (!game) {
+      throw new NotFoundException('Game not found');
+    }
+
+    // Check if it's an external provider game
+    if (!game.providerId || game.provider === 'House') {
+      throw new BadRequestException('This game cannot be launched externally. Use the play endpoint instead.');
+    }
+
+    // Get the provider instance
+    const provider = await this.providerFactory.getProvider(game.providerEntity.code);
+
+    // Launch the game through the provider
+    const launchData = await provider.launchGame(
+      game.externalGameId || gameId,
+      userId,
+      demo,
+      returnUrl,
+    );
+
+    return {
+      success: true,
+      data: launchData,
+    };
   }
 
   async seedDatabase(): Promise<void> {

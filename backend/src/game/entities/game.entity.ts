@@ -5,8 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { GameSession } from './game-session.entity';
+import { Provider } from './provider.entity';
 
 export enum GameType {
   SLOT = 'SLOT',
@@ -41,7 +44,20 @@ export class Game {
   type: GameType;
 
   @Column({ nullable: true })
-  provider: string;
+  provider: string; // Legacy field, kept for backward compatibility
+
+  @Column({ nullable: true })
+  providerId: string;
+
+  @ManyToOne(() => Provider, (provider) => provider.games, { nullable: true })
+  @JoinColumn({ name: 'providerId' })
+  providerEntity: Provider;
+
+  @Column({ nullable: true })
+  externalGameId: string; // Provider's game ID
+
+  @Column({ nullable: true })
+  launchUrl: string; // URL to launch the game (for external providers)
 
   @Column({ type: 'decimal', precision: 5, scale: 2 })
   rtpPercentage: number; // Return to Player percentage
