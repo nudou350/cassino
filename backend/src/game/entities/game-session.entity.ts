@@ -46,7 +46,7 @@ export class GameSession {
   @Column({ nullable: true })
   serverSeed: string;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'bigint', nullable: true })
   nonce: number;
 
   @Column({ default: false })

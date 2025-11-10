@@ -6,7 +6,7 @@ services:
     container_name: casino-postgres
     restart: unless-stopped
     ports:
-      - '5432:5432'
+      - '5433:5432'
     environment:
       POSTGRES_USER: casino_user
       POSTGRES_PASSWORD: casino_pass
@@ -21,7 +21,7 @@ services:
     container_name: casino-redis
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - '6381:6379'
     volumes:
       - redis_data:/data
     networks:

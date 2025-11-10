@@ -1,0 +1,257 @@
+<div class="min-h-screen bg-casino-darker py-8">
+  <div class="container-custom">
+    <!-- Back Button -->
+    <button (click)="goBack()" class="btn-outline text-sm py-2 px-4 mb-6">
+      ← Back to Lobby
+    </button>
+
+    <!-- Loading/Error States -->
+    @if (loading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="text-center">
+          <svg class="animate-spin h-12 w-12 text-casino-primary mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-casino-light">Loading game...</p>
+        </div>
+      </div>
+    }
+
+    @if (error() && !loading()) {
+      <div class="bg-casino-danger bg-opacity-20 border border-casino-danger rounded-lg p-6 text-center">
+        <p class="text-casino-danger text-lg mb-4">{{ error() }}</p>
+        <button (click)="goBack()" class="btn-primary">Return to Lobby</button>
+      </div>
+    }
+
+    <!-- Game Content -->
+    @if (game() && !loading()) {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Game Area -->
+        <div class="lg:col-span-2">
+          <!-- Game Header -->
+          <div class="card mb-6">
+            <div class="flex items-start justify-between">
+              <div>
+                <h1 class="text-3xl font-display font-bold text-neon-gold mb-2">{{ game()!.name }}</h1>
+                <p class="text-gray-400">{{ game()!.description }}</p>
+              </div>
+              <div class="text-right">
+                <div class="badge badge-info mb-2">{{ game()!.type }}</div>
+                <p class="text-sm text-gray-400">RTP: <span class="text-casino-success font-semibold">{{ game()!.rtpPercentage }}%</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Roulette Table -->
+          <div class="card">
+            <!-- Balance & Demo Mode -->
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-800">
+              <div>
+                <p class="text-sm text-gray-400">Your Balance</p>
+                <p class="text-2xl font-bold text-casino-accent">${{ balance().toFixed(2) }}</p>
+              </div>
+              <div>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <span class="text-sm text-gray-400">Demo Mode</span>
+                  <input type="checkbox" [checked]="isDemoMode()" (change)="toggleDemoMode()" [disabled]="isSpinning()" class="h-5 w-5 rounded border-gray-700 bg-casino-dark text-casino-primary" />
+                </label>
+              </div>
+            </div>
+
+            <!-- Winning Number Display -->
+            <div class="text-center mb-6">
+              <div class="inline-block">
+                <p class="text-sm text-gray-400 mb-2">Winning Number</p>
+                <div class="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-4xl font-bold shadow-neon-gold border-4 border-casino-accent"
+                     [class]="getNumberColor(winningNumber() ?? 0)"
+                     [class.animate-spin]="isSpinning()">
+                  {{ winningNumber() ?? '?' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Result Display -->
+            @if (showResult() && lastResult()) {
+              <div class="mb-6 p-4 rounded-lg text-center"
+                   [class.bg-casino-success]="lastResult()!.payoutAmount > 0"
+                   [class.bg-casino-danger]="lastResult()!.payoutAmount === 0"
+                   [class.bg-opacity-20]="true">
+                @if (lastResult()!.payoutAmount > 0) {
+                  <p class="text-2xl font-bold text-casino-success mb-2">🎉 You Won!</p>
+                  <p class="text-xl text-casino-light">+ ${{ lastResult()!.payoutAmount.toFixed(2) }}</p>
+                } @else {
+                  <p class="text-xl font-semibold text-casino-danger">Better luck next time!</p>
+                  <p class="text-lg text-casino-light">- ${{ totalBet().toFixed(2) }}</p>
+                }
+              </div>
+            }
+
+            <!-- Bet Amount Control -->
+            <div class="mb-6">
+              <label class="input-label">Chip Value</label>
+              <div class="flex items-center space-x-2">
+                <button (click)="decreaseBetAmount()" [disabled]="isSpinning()" class="btn-secondary px-4 py-2 disabled:opacity-50">-</button>
+                <input type="number" [(ngModel)]="betAmount" [min]="game()!.minBet" [max]="game()!.maxBet" [disabled]="isSpinning()" class="input-field text-center flex-1" />
+                <button (click)="increaseBetAmount()" [disabled]="isSpinning()" class="btn-secondary px-4 py-2 disabled:opacity-50">+</button>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Min: ${{ game()!.minBet }} | Max: ${{ game()!.maxBet }}</p>
+            </div>
+
+            <!-- Betting Board -->
+            <div class="mb-6 p-4 bg-green-800 rounded-lg">
+              <h3 class="text-lg font-display font-semibold text-white mb-4 text-center">Place Your Bets</h3>
+
+              <!-- Straight Up Numbers -->
+              <div class="grid grid-cols-12 gap-1 mb-4">
+                @for (num of numbers.slice(1); track num) {
+                  <button
+                    (click)="placeBet('straight', num)"
+                    [disabled]="isSpinning()"
+                    [class]="getNumberColor(num)"
+                    class="aspect-square rounded text-white font-bold text-xs hover:opacity-80 transition-opacity disabled:opacity-50">
+                    {{ num }}
+                  </button>
+                }
+              </div>
+
+              <!-- Outside Bets -->
+              <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+                <button (click)="placeBet('red', 'red')" [disabled]="isSpinning()" class="btn-danger py-3">
+                  Red
+                </button>
+                <button (click)="placeBet('black', 'black')" [disabled]="isSpinning()" class="bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800">
+                  Black
+                </button>
+                <button (click)="placeBet('even', 'even')" [disabled]="isSpinning()" class="btn-secondary py-3">
+                  Even
+                </button>
+                <button (click)="placeBet('odd', 'odd')" [disabled]="isSpinning()" class="btn-secondary py-3">
+                  Odd
+                </button>
+                <button (click)="placeBet('low', 'low')" [disabled]="isSpinning()" class="btn-secondary py-3">
+                  1-18
+                </button>
+                <button (click)="placeBet('high', 'high')" [disabled]="isSpinning()" class="btn-secondary py-3">
+                  19-36
+                </button>
+              </div>
+            </div>
+
+            <!-- Placed Bets -->
+            @if (placedBets().length > 0) {
+              <div class="mb-6">
+                <h3 class="text-sm font-semibold text-casino-light mb-2">Your Bets:</h3>
+                <div class="space-y-2 max-h-40 overflow-y-auto">
+                  @for (bet of placedBets(); track $index) {
+                    <div class="flex items-center justify-between bg-casino-darker p-2 rounded">
+                      <span class="text-sm text-casino-light">
+                        {{ bet.type === 'straight' ? 'Number ' + bet.value : bet.value }}
+                        - ${{ bet.amount }}
+                      </span>
+                      <button (click)="removeBet($index)" [disabled]="isSpinning()" class="text-casino-danger hover:text-red-400 text-xs">
+                        Remove
+                      </button>
+                    </div>
+                  }
+                </div>
+                <div class="mt-2 pt-2 border-t border-gray-700 flex justify-between items-center">
+                  <span class="font-semibold text-casino-light">Total Bet:</span>
+                  <span class="font-bold text-casino-accent text-lg">${{ totalBet().toFixed(2) }}</span>
+                </div>
+              </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+              <button (click)="clearBets()" [disabled]="isSpinning() || placedBets().length === 0" class="btn-outline flex-1 py-4 disabled:opacity-50">
+                Clear Bets
+              </button>
+              <button (click)="spin()" [disabled]="isSpinning() || placedBets().length === 0" class="btn-primary flex-1 py-4 text-lg disabled:opacity-50">
+                @if (isSpinning()) {
+                  <span class="flex items-center justify-center">
+                    <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Spinning...
+                  </span>
+                } @else {
+                  🎡 SPIN
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+          <!-- Payouts -->
+          <div class="card mb-6">
+            <h3 class="text-lg font-display font-semibold text-casino-light mb-4">Payouts</h3>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-400">Straight (Single #):</span>
+                <span class="text-casino-accent font-semibold">35:1</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Red/Black:</span>
+                <span class="text-casino-accent font-semibold">1:1</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Even/Odd:</span>
+                <span class="text-casino-accent font-semibold">1:1</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">High/Low:</span>
+                <span class="text-casino-accent font-semibold">1:1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Game History -->
+          <div class="card">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-display font-semibold text-casino-light">Recent Plays</h3>
+              <button (click)="toggleHistory()" class="text-casino-primary text-sm hover:text-casino-accent">
+                {{ showHistory() ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+
+            @if (showHistory()) {
+              @if (gameHistory().length > 0) {
+                <div class="space-y-2 max-h-96 overflow-y-auto">
+                  @for (session of gameHistory(); track session.id) {
+                    <div class="bg-casino-darker p-3 rounded-lg border border-gray-800">
+                      <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-gray-400">{{ session.createdAt | date:'short' }}</span>
+                        @if (session.isDemo) {
+                          <span class="badge bg-gray-600 text-xs">DEMO</span>
+                        }
+                      </div>
+                      <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-400">Bet: ${{ session.betAmount }}</span>
+                        <span class="text-sm font-semibold"
+                              [class.text-casino-success]="session.payoutAmount > 0"
+                              [class.text-casino-danger]="session.payoutAmount === 0">
+                          @if (session.payoutAmount > 0) {
+                            +${{ session.payoutAmount }}
+                          } @else {
+                            -${{ session.betAmount }}
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-gray-400 text-sm text-center py-4">No plays yet. Start betting!</p>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

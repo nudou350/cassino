@@ -9,21 +9,21 @@ import {
 import { GameSession } from './game-session.entity';
 
 export enum GameType {
-  SLOT = 'slot',
-  BLACKJACK = 'blackjack',
-  ROULETTE = 'roulette',
-  BACCARAT = 'baccarat',
-  POKER = 'poker',
-  CRAPS = 'craps',
-  SCRATCH_CARD = 'scratch_card',
-  KENO = 'keno',
-  BINGO = 'bingo',
+  SLOT = 'SLOT',
+  BLACKJACK = 'BLACKJACK',
+  ROULETTE = 'ROULETTE',
+  BACCARAT = 'BACCARAT',
+  POKER = 'POKER',
+  CRAPS = 'CRAPS',
+  SCRATCH_CARD = 'SCRATCH_CARD',
+  KENO = 'KENO',
+  BINGO = 'BINGO',
 }
 
 export enum Volatility {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
 }
 
 @Entity('games')

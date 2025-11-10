@@ -1,0 +1,150 @@
+<div class="min-h-screen bg-casino-darker py-8">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl md:text-5xl font-display font-bold text-neon-gold mb-2">
+        Game Lobby
+      </h1>
+      <p class="text-casino-light text-lg">Choose your game and start winning!</p>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="mb-8 flex flex-col md:flex-row gap-4">
+      <!-- Search Bar -->
+      <div class="flex-1">
+        <div class="relative">
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="onSearchChange($event)"
+            placeholder="Search games..."
+            class="input-field pl-10"
+          />
+          <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="flex gap-2 flex-wrap">
+        @for (type of gameTypes; track type) {
+          <button
+            (click)="setGameType(type)"
+            [class.btn-primary]="selectedType() === type"
+            [class.btn-outline]="selectedType() !== type"
+            class="text-sm py-2 px-4"
+          >
+            {{ type }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="text-center">
+          <svg class="animate-spin h-12 w-12 text-casino-primary mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-casino-light">Loading games...</p>
+        </div>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error() && !loading()) {
+      <div class="bg-casino-danger bg-opacity-20 border border-casino-danger rounded-lg p-6 text-center">
+        <p class="text-casino-danger text-lg mb-4">{{ error() }}</p>
+        <button (click)="loadGames()" class="btn-primary">
+          Try Again
+        </button>
+      </div>
+    }
+
+    <!-- Games Grid -->
+    @if (!loading() && !error()) {
+      @if (filteredGames().length > 0) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          @for (game of filteredGames(); track game.id) {
+            <div class="game-card" (click)="playGame(game)">
+              <!-- Game Thumbnail -->
+              <div class="relative h-48 bg-gradient-to-br from-casino-primary to-casino-secondary overflow-hidden">
+                @if (game.thumbnailUrl) {
+                  <img [src]="game.thumbnailUrl" [alt]="game.name" class="w-full h-full object-cover">
+                } @else {
+                  <div class="flex items-center justify-center h-full">
+                    <span class="text-6xl">🎰</span>
+                  </div>
+                }
+
+                <!-- Badge for game type -->
+                <div class="absolute top-2 left-2">
+                  <span class="badge badge-info text-xs">{{ game.type }}</span>
+                </div>
+
+                <!-- Demo available badge -->
+                @if (game.demoAvailable) {
+                  <div class="absolute top-2 right-2">
+                    <span class="badge bg-casino-accent bg-opacity-20 text-casino-accent text-xs">DEMO</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Game Info -->
+              <div class="p-4">
+                <h3 class="text-lg font-display font-semibold text-casino-light mb-2 truncate">
+                  {{ game.name }}
+                </h3>
+
+                <p class="text-sm text-gray-400 mb-3 line-clamp-2">
+                  {{ game.description }}
+                </p>
+
+                <!-- Game Stats -->
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                  <div class="flex items-center space-x-1">
+                    <span>RTP:</span>
+                    <span class="text-casino-success font-semibold">{{ game.rtpPercentage }}%</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <span>Volatility:</span>
+                    <span [class]="getVolatilityColor(game.volatility)" class="font-semibold">{{ game.volatility }}</span>
+                  </div>
+                </div>
+
+                <!-- Betting Limits -->
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
+                  <div>
+                    <span>Min:</span>
+                    <span class="text-casino-light font-semibold ml-1">${{ game.minBet }}</span>
+                  </div>
+                  <div>
+                    <span>Max:</span>
+                    <span class="text-casino-light font-semibold ml-1">${{ game.maxBet }}</span>
+                  </div>
+                </div>
+
+                <!-- Play Button -->
+                <button class="btn-primary w-full text-sm py-2">
+                  Play Now
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- No Games Found -->
+        <div class="text-center py-20">
+          <svg class="w-20 h-20 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="text-xl font-display text-casino-light mb-2">No Games Found</h3>
+          <p class="text-gray-400">Try adjusting your search or filter criteria</p>
+        </div>
+      }
+    }
+  </div>
+</div>

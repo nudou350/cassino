@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, IsBoolean, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsBoolean, Min, IsObject } from 'class-validator';
 
 export class PlayGameDto {
   @IsNumber()
@@ -12,4 +12,8 @@ export class PlayGameDto {
   @IsOptional()
   @IsBoolean()
   isDemo?: boolean;
+
+  @IsOptional()
+  @IsObject()
+  gameData?: any; // Game-specific data (e.g., selected numbers for Keno)
 }

@@ -10,6 +10,8 @@ import { ProvablyFairService } from './provably-fair.service';
 import { SlotGameService } from './services/slot-game.service';
 import { BlackjackService } from './services/blackjack.service';
 import { RouletteService } from './services/roulette.service';
+import { ScratchCardService } from './services/scratch-card.service';
+import { KenoService } from './services/keno.service';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { RouletteService } from './services/roulette.service';
     SlotGameService,
     BlackjackService,
     RouletteService,
+    ScratchCardService,
+    KenoService,
   ],
   exports: [GameService, ProvablyFairService],
 })

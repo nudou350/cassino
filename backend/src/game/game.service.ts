@@ -13,6 +13,8 @@ import { ProvablyFairService } from './provably-fair.service';
 import { SlotGameService } from './services/slot-game.service';
 import { BlackjackService } from './services/blackjack.service';
 import { RouletteService } from './services/roulette.service';
+import { ScratchCardService } from './services/scratch-card.service';
+import { KenoService } from './services/keno.service';
 
 @Injectable()
 export class GameService {
@@ -27,6 +29,8 @@ export class GameService {
     private slotGameService: SlotGameService,
     private blackjackService: BlackjackService,
     private rouletteService: RouletteService,
+    private scratchCardService: ScratchCardService,
+    private kenoService: KenoService,
   ) {}
 
   async getAllGames(): Promise<Game[]> {
@@ -54,6 +58,7 @@ export class GameService {
     betAmount: number,
     clientSeed?: string,
     isDemo: boolean = false,
+    gameData?: any,
   ): Promise<{
     session: GameSession;
     outcome: any;
@@ -130,6 +135,32 @@ export class GameService {
         );
         outcome = rouletteResult.outcome;
         payout = rouletteResult.payout;
+        break;
+
+      case GameType.SCRATCH_CARD:
+        const scratchResult = await this.scratchCardService.play(
+          serverSeed,
+          effectiveClientSeed,
+          nonce,
+          betAmount,
+          game,
+        );
+        outcome = scratchResult.outcome;
+        payout = scratchResult.payout;
+        break;
+
+      case GameType.KENO:
+        const selectedNumbers = gameData?.selectedNumbers || [];
+        const kenoResult = await this.kenoService.play(
+          serverSeed,
+          effectiveClientSeed,
+          nonce,
+          betAmount,
+          game,
+          selectedNumbers,
+        );
+        outcome = kenoResult.outcome;
+        payout = kenoResult.payout;
         break;
 
       default:
@@ -241,6 +272,28 @@ export class GameService {
         maxBet: 1000,
         demoAvailable: true,
         description: 'European roulette with single zero',
+      },
+      {
+        name: 'Golden Scratch',
+        type: GameType.SCRATCH_CARD,
+        provider: 'House',
+        rtpPercentage: 95.0,
+        volatility: Volatility.HIGH,
+        minBet: 0.5,
+        maxBet: 50,
+        demoAvailable: true,
+        description: 'Instant win scratch card with exciting prizes',
+      },
+      {
+        name: 'Keno Classic',
+        type: GameType.KENO,
+        provider: 'House',
+        rtpPercentage: 94.0,
+        volatility: Volatility.MEDIUM,
+        minBet: 1,
+        maxBet: 100,
+        demoAvailable: true,
+        description: 'Pick your lucky numbers and win big',
       },
     ];
 

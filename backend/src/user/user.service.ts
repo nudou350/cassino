@@ -32,11 +32,13 @@ export class UserService {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user with initial balance
     const user = this.userRepository.create({
       email,
       username,
       passwordHash,
+      balance: 500, // Starting balance for testing
+      bonusBalance: 0,
     });
 
     return await this.userRepository.save(user);

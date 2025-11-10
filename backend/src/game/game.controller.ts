@@ -39,6 +39,7 @@ export class GameController {
       playGameDto.betAmount,
       playGameDto.clientSeed,
       playGameDto.isDemo || false,
+      playGameDto.gameData,
     );
   }
 
