@@ -1,0 +1,205 @@
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+  <div class="max-w-md w-full">
+    <!-- Logo/Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl md:text-5xl font-display font-bold text-neon-gold mb-2">
+        Casino Royal
+      </h1>
+      <p class="text-casino-light text-lg">Join the Excitement!</p>
+    </div>
+
+    <!-- Register Card -->
+    <div class="card">
+      <h2 class="text-2xl font-display font-semibold text-casino-light mb-6">Create Your Account</h2>
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="bg-casino-danger bg-opacity-20 border border-casino-danger rounded-lg p-4 mb-6">
+          <p class="text-casino-danger text-sm">{{ errorMessage() }}</p>
+        </div>
+      }
+
+      <!-- Register Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <!-- Username Field -->
+        <div class="mb-4">
+          <label for="username" class="input-label">Username</label>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            class="input-field"
+            [class.border-casino-danger]="username?.invalid && username?.touched"
+            placeholder="Choose a username"
+          />
+          @if (username?.invalid && username?.touched) {
+            <p class="text-casino-danger text-sm mt-1">
+              @if (username?.errors?.['required']) {
+                Username is required
+              }
+              @if (username?.errors?.['minlength']) {
+                Username must be at least 3 characters
+              }
+              @if (username?.errors?.['maxlength']) {
+                Username cannot exceed 20 characters
+              }
+            </p>
+          }
+        </div>
+
+        <!-- Email Field -->
+        <div class="mb-4">
+          <label for="email" class="input-label">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="input-field"
+            [class.border-casino-danger]="email?.invalid && email?.touched"
+            placeholder="you@example.com"
+          />
+          @if (email?.invalid && email?.touched) {
+            <p class="text-casino-danger text-sm mt-1">
+              @if (email?.errors?.['required']) {
+                Email is required
+              }
+              @if (email?.errors?.['email']) {
+                Please enter a valid email address
+              }
+            </p>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="mb-4">
+          <label for="password" class="input-label">Password</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            class="input-field"
+            [class.border-casino-danger]="password?.invalid && password?.touched"
+            placeholder="••••••••"
+          />
+          @if (password?.invalid && password?.touched) {
+            <p class="text-casino-danger text-sm mt-1">
+              @if (password?.errors?.['required']) {
+                Password is required
+              }
+              @if (password?.errors?.['minlength']) {
+                Password must be at least 6 characters
+              }
+            </p>
+          }
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div class="mb-4">
+          <label for="confirmPassword" class="input-label">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="input-field"
+            [class.border-casino-danger]="(confirmPassword?.invalid && confirmPassword?.touched) || (registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched)"
+            placeholder="••••••••"
+          />
+          @if (confirmPassword?.invalid && confirmPassword?.touched) {
+            <p class="text-casino-danger text-sm mt-1">
+              Please confirm your password
+            </p>
+          }
+          @if (registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched) {
+            <p class="text-casino-danger text-sm mt-1">
+              Passwords do not match
+            </p>
+          }
+        </div>
+
+        <!-- Age Confirmation -->
+        <div class="mb-4">
+          <label class="flex items-start">
+            <input
+              type="checkbox"
+              formControlName="ageConfirm"
+              class="mt-1 mr-3 h-4 w-4 rounded border-gray-700 bg-casino-dark text-casino-primary focus:ring-casino-primary focus:ring-offset-casino-dark"
+            />
+            <span class="text-sm text-casino-light">
+              I confirm that I am at least 18 years old
+            </span>
+          </label>
+          @if (ageConfirm?.invalid && ageConfirm?.touched) {
+            <p class="text-casino-danger text-sm mt-1">
+              You must be 18+ to register
+            </p>
+          }
+        </div>
+
+        <!-- Terms & Conditions -->
+        <div class="mb-6">
+          <label class="flex items-start">
+            <input
+              type="checkbox"
+              formControlName="termsAccept"
+              class="mt-1 mr-3 h-4 w-4 rounded border-gray-700 bg-casino-dark text-casino-primary focus:ring-casino-primary focus:ring-offset-casino-dark"
+            />
+            <span class="text-sm text-casino-light">
+              I agree to the <a href="#" class="text-casino-primary hover:text-casino-accent">Terms of Service</a> and <a href="#" class="text-casino-primary hover:text-casino-accent">Privacy Policy</a>
+            </span>
+          </label>
+          @if (termsAccept?.invalid && termsAccept?.touched) {
+            <p class="text-casino-danger text-sm mt-1">
+              You must accept the terms and conditions
+            </p>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-primary w-full"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            <span class="flex items-center justify-center">
+              <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creating account...
+            </span>
+          } @else {
+            Create Account
+          }
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="relative my-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-700"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-4 bg-casino-dark text-gray-500">OR</span>
+        </div>
+      </div>
+
+      <!-- Login Link -->
+      <div class="text-center">
+        <p class="text-casino-light text-sm">
+          Already have an account?
+          <a routerLink="/login" class="text-casino-primary hover:text-casino-accent font-semibold ml-1">
+            Sign In
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Responsible Gaming Notice -->
+    <div class="mt-6 text-center">
+      <p class="text-gray-500 text-xs">
+        Must be 18+ to play. Gamble responsibly.
+      </p>
+    </div>
+  </div>
+</div>

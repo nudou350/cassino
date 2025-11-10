@@ -1,0 +1,124 @@
+/* Tailwind CSS Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Global Styles */
+@layer base {
+  body {
+    @apply bg-casino-darker text-casino-light;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+}
+
+/* Custom Components */
+@layer components {
+  /* Primary Button - Casino themed */
+  .btn-primary {
+    @apply bg-gradient-to-r from-casino-primary to-casino-accent text-white font-bold py-3 px-6 rounded-lg shadow-neon hover:shadow-neon-gold transition-all duration-300 transform hover:scale-105 active:scale-95;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply bg-casino-secondary text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-neon-blue transition-all duration-300 hover:bg-opacity-90;
+  }
+
+  /* Outline Button */
+  .btn-outline {
+    @apply border-2 border-casino-primary text-casino-primary font-semibold py-2 px-6 rounded-lg hover:bg-casino-primary hover:text-white transition-all duration-300;
+  }
+
+  /* Success Button */
+  .btn-success {
+    @apply bg-casino-success text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-all duration-300;
+  }
+
+  /* Danger Button */
+  .btn-danger {
+    @apply bg-casino-danger text-white font-semibold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-all duration-300;
+  }
+
+  /* Card Component */
+  .card {
+    @apply bg-casino-dark rounded-xl shadow-game p-6 border border-gray-800;
+  }
+
+  /* Game Card */
+  .game-card {
+    @apply bg-casino-dark rounded-lg overflow-hidden shadow-card hover:shadow-game transition-all duration-300 transform hover:scale-105 cursor-pointer border border-gray-800;
+  }
+
+  /* Input Field */
+  .input-field {
+    @apply w-full bg-casino-dark border border-gray-700 rounded-lg px-4 py-3 text-casino-light placeholder-gray-500 focus:outline-none focus:border-casino-primary focus:ring-2 focus:ring-casino-primary focus:ring-opacity-50 transition-all duration-200;
+  }
+
+  /* Label */
+  .input-label {
+    @apply block text-sm font-medium text-casino-light mb-2;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-casino-success bg-opacity-20 text-casino-success;
+  }
+
+  .badge-danger {
+    @apply badge bg-casino-danger bg-opacity-20 text-casino-danger;
+  }
+
+  .badge-warning {
+    @apply badge bg-casino-accent bg-opacity-20 text-casino-accent;
+  }
+
+  .badge-info {
+    @apply badge bg-casino-secondary bg-opacity-20 text-blue-400;
+  }
+
+  /* Neon Text */
+  .text-neon {
+    @apply text-casino-primary;
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.8);
+  }
+
+  .text-neon-gold {
+    @apply text-casino-accent;
+    text-shadow: 0 0 10px rgba(247, 184, 1, 0.8);
+  }
+}
+
+/* Custom Utilities */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

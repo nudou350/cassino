@@ -1,0 +1,25 @@
+@keyframes flip {
+  from {
+    transform: rotateY(90deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-flip {
+  animation: flip 0.3s ease-out;
+}
+
+.scratched {
+  cursor: default !important;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .aspect-square {
+    min-height: 80px;
+  }
+}
